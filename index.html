@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Betty and the Light of Mora</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fredoka+One&display=swap');
+:root {
+  --lime:#A8CF00;--lime-light:#E8F5B0;--lime-mid:#BFDF3A;--lime-dark:#5A7A00;
+  --gold:#D4A017;--gold-light:#FFF1C0;--gold-mid:#F0C030;--gold-dark:#8B6A00;
+  --yellow:#FFE135;--yellow-light:#FFFBE8;
+  --dark:#1E2A0A;--text:#2C3A10;--muted:#6B7A3A;--white:#FFFFFF;
+  --radius:16px;--radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#F6FAD8;min-height:100vh;color:var(--text);padding:1.5rem 1rem 3rem}
+.game-wrap{max-width:640px;margin:0 auto}
+.screen{display:none}
+.screen.active{display:block;animation:fadeUp 0.45s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.game-header{text-align:center;margin-bottom:1.5rem}
+.bear-icon{font-size:54px;display:block;animation:bearBob 2.8s ease-in-out infinite;margin-bottom:0.2rem}
+@keyframes bearBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.game-title{font-family:'Fredoka One',sans-serif;font-size:2rem;color:var(--dark);line-height:1.1}
+.game-title span{color:var(--gold-dark)}
+.game-subtitle{font-size:0.83rem;color:var(--muted);margin-top:4px}
+.author-tag{display:inline-block;background:var(--gold-light);color:var(--gold-dark);border:1.5px solid var(--gold-mid);border-radius:20px;font-size:0.8rem;font-weight:700;padding:3px 14px;margin-top:8px}
+
+/* CARD */
+.card{background:var(--white);border:1.5px solid #D6E87A;border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem}
+
+/* FORM */
+.form-label{display:block;font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;margin-top:14px}
+.form-label:first-of-type{margin-top:0}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid #D6E87A;border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:15px;color:var(--text);background:var(--yellow-light);outline:none;transition:border-color 0.18s}
+.form-input:focus{border-color:var(--gold-mid);background:#fff}
+.form-error{font-size:0.75rem;color:#B33A00;font-weight:600;margin-top:4px;display:none}
+.btn-start{width:100%;margin-top:1.25rem;padding:0.85rem;font-family:'Fredoka One',sans-serif;font-size:1.1rem;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,#C8DF20,#F0C030);color:var(--dark);cursor:pointer;box-shadow:0 3px 0 #8B8B00;transition:transform 0.1s,box-shadow 0.1s}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 0 #8B8B00}
+.btn-start:active{transform:translateY(2px);box-shadow:0 1px 0 #8B8B00}
+
+/* CHARACTER CARD */
+.char-card{border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;border:1.5px solid #D6E87A;background:var(--yellow-light);display:flex;align-items:center;gap:14px}
+.char-avatar{font-size:52px;flex-shrink:0;animation:charFloat 3s ease-in-out infinite}
+@keyframes charFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.char-avatar.spin{animation:charSpin 0.6s ease}
+@keyframes charSpin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.char-name{font-family:'Fredoka One',sans-serif;font-size:1.05rem;color:var(--dark)}
+.char-desc{font-size:0.8rem;color:var(--muted);line-height:1.5;margin-top:2px}
+.char-badge{display:inline-block;font-size:0.7rem;font-weight:700;background:var(--gold-light);color:var(--gold-dark);border:1px solid var(--gold-mid);border-radius:12px;padding:2px 9px;margin-top:4px}
+
+/* PILLS */
+.pills-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem}
+.pill{font-size:0.75rem;font-weight:700;padding:3px 11px;border-radius:20px;border:1.5px solid #D0D0D0;color:#999;background:#F5F5F5;transition:all 0.3s}
+.pill.earned{background:var(--gold-light);border-color:var(--gold-mid);color:var(--gold-dark);animation:pillPop 0.35s ease}
+@keyframes pillPop{0%{transform:scale(0.7)}65%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* PROGRESS */
+.progress-wrap{background:#E8EFC0;border-radius:20px;height:8px;margin-bottom:0.5rem;overflow:hidden}
+.progress-fill{height:8px;border-radius:20px;background:linear-gradient(90deg,#BFDF3A,#F0C030);transition:width 0.4s ease}
+.progress-txt{font-size:0.75rem;color:var(--muted);font-weight:600;margin-bottom:0.75rem}
+
+/* SCENE */
+.scene-box{background:var(--yellow-light);border:1.5px solid #E8D870;border-radius:var(--radius);padding:1.25rem 1.4rem;margin-bottom:1rem}
+.scene-eyebrow{font-size:0.7rem;font-weight:800;color:var(--gold-dark);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.scene-text{font-size:0.95rem;line-height:1.8;color:var(--text);white-space:pre-line}
+
+/* CHOICES */
+.choice-btn{display:block;width:100%;text-align:left;padding:0.75rem 1rem;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:600;border:1.5px solid #D6E87A;border-radius:var(--radius-sm);background:var(--white);color:var(--text);cursor:pointer;margin-bottom:8px;transition:background 0.15s,border-color 0.15s,transform 0.1s}
+.choice-btn:hover:not(:disabled){background:var(--lime-light);border-color:#BFDF3A;transform:translateX(3px)}
+.choice-btn:disabled{opacity:0.5;cursor:default;transform:none}
+
+/* FEEDBACK */
+.feedback-box{border-radius:var(--radius-sm);padding:0.9rem 1.1rem;margin-bottom:0.75rem;font-size:0.9rem;line-height:1.65;font-weight:600;display:none;animation:fadeUp 0.3s ease}
+.fb-good{background:var(--lime-light);border:1.5px solid #BFDF3A;color:var(--lime-dark)}
+.fb-bad{background:#FFF3E0;border:1.5px solid #F0C030;color:#7A4A00}
+
+/* BUTTONS */
+.btn-next{display:none;margin-top:0.75rem;padding:0.6rem 1.4rem;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.92rem;border:1.5px solid #C8DF20;border-radius:var(--radius-sm);background:var(--lime-light);color:var(--lime-dark);cursor:pointer;transition:background 0.15s}
+.btn-next:hover{background:#D6EE60}
+.btn-restart{display:inline-block;margin-top:1rem;padding:0.7rem 1.6rem;font-family:'Fredoka One',sans-serif;font-size:1rem;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,#C8DF20,#F0C030);color:var(--dark);cursor:pointer;box-shadow:0 3px 0 #8B8B00;transition:transform 0.1s}
+.btn-restart:hover{transform:translateY(-1px)}
+
+/* END */
+.end-wrap{position:relative;overflow:hidden}
+#confetti-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:var(--radius)}
+.trophy-anim{font-size:64px;text-align:center;display:block;margin:0 auto 0.5rem;animation:trophyBounce 0.7s cubic-bezier(.36,.07,.19,.97)}
+@keyframes trophyBounce{0%{transform:scale(0) rotate(-15deg);opacity:0}60%{transform:scale(1.25) rotate(5deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.cert{border:2.5px solid var(--gold-mid);border-radius:var(--radius);padding:1.5rem;text-align:center;background:var(--gold-light);margin-bottom:1rem;position:relative}
+.cert-corner{position:absolute;font-size:1.3rem}
+.cert-corner.tl{top:10px;left:14px}.cert-corner.tr{top:10px;right:14px}
+.cert-corner.bl{bottom:10px;left:14px}.cert-corner.br{bottom:10px;right:14px}
+.cert-eyebrow{font-size:0.7rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-dark);margin-bottom:4px}
+.cert-name{font-family:'Fredoka One',sans-serif;font-size:1.9rem;color:var(--dark);margin:4px 0;line-height:1.1}
+.cert-detail{font-size:0.8rem;color:var(--muted);line-height:1.7;margin-top:6px}
+.cert-grade{display:inline-block;background:linear-gradient(135deg,#C8DF20,#F0C030);color:var(--dark);font-family:'Fredoka One',sans-serif;font-size:1rem;padding:4px 18px;border-radius:20px;margin-top:8px;box-shadow:0 2px 0 #8B8B00}
+.cert-book{font-size:0.75rem;color:var(--gold-dark);font-weight:700;margin-top:10px;font-style:italic}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.stat-card{background:var(--white);border:1.5px solid #D6E87A;border-radius:var(--radius-sm);padding:0.9rem 0.5rem;text-align:center}
+.stat-num{font-family:'Fredoka One',sans-serif;font-size:2rem;color:var(--dark);line-height:1}
+.stat-lbl{font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:3px}
+.quality-sum-label{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+
+/* FOOTER */
+.game-footer{text-align:center;font-size:0.75rem;color:var(--muted);margin-top:2rem;font-weight:600}
+.game-footer span{color:var(--gold-dark)}
+
+@media print{body *{visibility:hidden}#print-zone,#print-zone *{visibility:visible}#print-zone{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}}
+@media(max-width:480px){.game-title{font-size:1.55rem}.stat-num{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<div class="game-wrap">
+
+<div class="game-header">
+  <span class="bear-icon">🐻</span>
+  <div class="game-title">Betty and the <span>Light of Mora</span></div>
+  <div class="game-subtitle">A story adventure for young hearts · Ages 7–12</div>
+  <div class="author-tag">✍ By Blessing Mhlanga</div>
+</div>
+
+<!-- REGISTER -->
+<div id="s-register" class="screen active">
+  <div class="card">
+    <div style="font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:0.25rem">Welcome, adventurer!</div>
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6">Fill in your details to begin Betty's journey and earn your certificate at the end.</div>
+    <label class="form-label" for="f-name">Your name</label>
+    <input class="form-input" type="text" id="f-name" placeholder="e.g. Amara" />
+    <div class="form-error" id="e-name">Please enter your name</div>
+    <label class="form-label" for="f-age">Your age</label>
+    <input class="form-input" type="number" id="f-age" placeholder="e.g. 9" min="5" max="18" />
+    <div class="form-error" id="e-age">Please enter a valid age (5–18)</div>
+    <label class="form-label" for="f-city">Where do you live?</label>
+    <input class="form-input" type="text" id="f-city" placeholder="e.g. Harare" />
+    <div class="form-error" id="e-city">Please enter your city or town</div>
+    <label class="form-label" for="f-email">Email address (yours or a parent's)</label>
+    <input class="form-input" type="email" id="f-email" placeholder="e.g. hello@example.com" />
+    <div class="form-error" id="e-email">Please enter a valid email address</div>
+    <button class="btn-start" onclick="startGame()">Begin the adventure ✨</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="s-game" class="screen">
+  <div id="char-display" class="char-card" style="display:none"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+    <span style="font-size:24px">🐻</span>
+    <div style="flex:1">
+      <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Betty's godly qualities</div>
+      <div class="pills-wrap" id="pill-wrap">
+        <span class="pill" data-q="courage">Courage</span>
+        <span class="pill" data-q="prayer">Prayer</span>
+        <span class="pill" data-q="honesty">Honesty</span>
+        <span class="pill" data-q="patience">Patience</span>
+        <span class="pill" data-q="humility">Humility</span>
+        <span class="pill" data-q="kindness">Kindness</span>
+        <span class="pill" data-q="faith">Faith</span>
+        <span class="pill" data-q="gratitude">Gratitude</span>
+      </div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-txt" id="progress-txt"></div>
+  <div class="scene-box">
+    <div class="scene-eyebrow" id="scene-title"></div>
+    <div class="scene-text" id="scene-text"></div>
+  </div>
+  <div class="feedback-box" id="feedback-box"></div>
+  <div id="choices"></div>
+  <button class="btn-next" id="next-btn" onclick="advanceScene()">Continue ›</button>
+</div>
+
+<!-- END -->
+<div id="s-end" class="screen">
+  <div class="end-wrap card" id="end-wrap">
+    <canvas id="confetti-canvas"></canvas>
+    <span class="trophy-anim">👑</span>
+    <div class="cert" id="cert-box"></div>
+    <div class="stat-grid" id="stat-grid"></div>
+    <div class="quality-sum-label">Qualities unlocked</div>
+    <div class="pills-wrap" id="end-pills"></div>
+    <button class="btn-restart" onclick="restartGame()">Play again ↺</button>
+  </div>
+</div>
+
+<div class="game-footer">
+  <span>Betty and the Light of Mora</span> · A children's book by <span>Blessing Mhlanga</span>
+</div>
+
+</div><!-- /game-wrap -->
+
+<script>
+const CHARS = {
+  betty:  { emoji:'🐻', name:'Betty the Bear',   desc:'A gentle brown bear who walks upright and whistles the most beautiful tunes. Chosen by God to save Mora.',  badge:'Our Hero' },
+  angel:  { emoji:'👼', name:'The Shining Angel', desc:'A glowing messenger sent by God, radiating warmth and golden light. Appears only to Betty.',               badge:'God\'s Messenger' },
+  crow:   { emoji:'🐦‍⬛', name:'The Dark Crow',    desc:'A large, gloomy bird who guards the edge of the Dark Forest, trying to scare travellers away.',             badge:'The Blocker' },
+  elder:  { emoji:'🐢', name:'Elder Tortoise',    desc:'The ancient, wise tortoise of Mora — slow in step but sharp in wisdom. He tests all who seek his blessing.', badge:'Village Elder' },
+  cola:   { emoji:'🦊', name:'Cola the Fox',      desc:'Betty\'s cunning best friend. Cola is clever and charming, but struggles with jealousy and telling the truth.', badge:'Betty\'s Friend' },
+  king:   { emoji:'🦁', name:'King Leo the Lion', desc:'The proud and mighty king of Mora, whose royal reward has tempted many. But he is also just and fair.',       badge:'King of Mora' },
+  spider: { emoji:'🕷️', name:'Shadow Spider',     desc:'A mysterious creature who spins webs of doubt and fear across the path, whispering lies to travellers.',      badge:'Trickster' },
+  dove:   { emoji:'🕊️', name:'The White Dove',    desc:'A gentle bird sent as a sign from God — appearing when Betty\'s faith is rewarded.',                          badge:'Sign of Hope' },
+  bunny:  { emoji:'🐰', name:'Bella the Bunny',   desc:'A shy young rabbit from Mora who is too afraid to leave her burrow because of the darkness.',                badge:'Villager' },
+  owl:    { emoji:'🦉', name:'Professor Owl',     desc:'The keeper of Mora\'s ancient scrolls. He will only share wisdom with those who prove they are honest.',       badge:'Scroll Keeper' },
+};
+
+const SCENES = [
+  {
+    title:"Welcome to Mora",
+    char:'betty',
+    text:"Welcome to Mora — a cheerful village of animals nestled deep in a magical forest! 🌿\n\nBetty is a brown bear like no other. She walks upright, has a gentle heart, and can whistle melodies so beautiful that flowers lean in to listen.\n\nBut today, something is terribly wrong. A mysterious darkness has crept over Mora. The sky is ash-grey, flowers have wilted, and the animals huddle in fear.\n\nBetty is sweeping her doorstep when a sudden golden glow appears before her...",
+    choices:[], next:1
+  },
+  {
+    title:"The angel appears",
+    char:'angel',
+    text:"A shining angel floats before Betty, surrounded by warm golden light.\n\n\"Betty,\" the angel says, \"God has seen your heart. You have been chosen to bring light back to Mora. The journey will be hard — you will be tested in many ways.\"\n\nBetty's paws tremble. She is just an ordinary bear.\n\nWhat should Betty do?",
+    choices:[
+      {text:"\"Yes, I trust God. I will go.\"", correct:true, quality:null, feedback:"Betty straightens up, takes a deep breath, and nods. 'I will go,' she says quietly. The angel smiles and the golden glow wraps around her like a warm blanket. The adventure begins! ✨"},
+      {text:"\"I am too small for this. Choose someone else.\"", correct:false, bad:"The angel says gently: 'God does not choose the strongest — God chooses the willing.' Betty must trust! Try again."}
+    ], next:2
+  },
+  {
+    title:"Test 1 — Courage: The Dark Forest",
+    char:'crow',
+    text:"Betty walks to the edge of the Dark Forest. The trees are twisted and tall, the wind moans, and strange shadows flicker between the trunks.\n\nSuddenly a large crow swoops down and blocks her path, wings spread wide.\n\n\"TURN BACK, little bear!\" it screeches. \"No one enters here and comes back!\"\n\nBetty's heart hammers. What should she do?",
+    choices:[
+      {text:"Run home — the crow must be telling the truth.", correct:false, bad:"Running away means leaving Mora in darkness. Courage means moving forward even when you're afraid. Try again!"},
+      {text:"Close her eyes, whistle a brave tune, and walk forward.", correct:true, quality:"courage", feedback:"Betty's paws shake but she whistles her bravest melody and steps forward. The crow flaps away in shock! ✨ Courage earned — Betty is in the forest!"},
+      {text:"Scream at the crow and throw a stone.", correct:false, bad:"Unkindness isn't the same as courage. There's a better, braver way — try again!"}
+    ], next:3
+  },
+  {
+    title:"Test 2 — Prayer: The Locked Door",
+    char:'angel',
+    text:"Deep in the forest Betty finds a towering stone door with a glowing riddle carved on it:\n\n\"I cannot be forced open.\nI cannot be tricked open.\nOnly one key opens me —\ncalling on the One who made all things.\"\n\nBetty has no key, no tools, and no idea what to do. What should she do?",
+    choices:[
+      {text:"Kick and push the door with all her strength.", correct:false, bad:"The door doesn't even shiver! Strength is not the answer here. Read the riddle again carefully."},
+      {text:"Sit down and cry until someone comes.", correct:false, bad:"Giving up too soon! There is a key — the riddle tells you what it is. Try again!"},
+      {text:"Kneel down and pray to God with all her heart.", correct:true, quality:"prayer", feedback:"Betty kneels on the cool forest floor and prays quietly. A golden light pulses and the door slowly swings open! Prayer earned! ✨ The answer was prayer all along."}
+    ], next:4
+  },
+  {
+    title:"Test 3 — Kindness: Bella the Bunny",
+    char:'bunny',
+    text:"On the other side of the door, Betty finds a small rabbit called Bella, curled up under a tree, sobbing.\n\n\"I'm too scared to walk home,\" Bella cries. \"The darkness makes everything look like monsters!\"\n\nBetty is in a hurry to complete her mission. What should she do?",
+    choices:[
+      {text:"Keep walking — the mission is more important.", correct:false, bad:"But who will help Bella? A good heart doesn't leave others behind. Try again!"},
+      {text:"Sit with Bella, comfort her, and whistle a calming tune to walk her home.", correct:true, quality:"kindness", feedback:"Betty sits beside Bella, puts a warm paw around her, and whistles a gentle lullaby. Bella stops shaking and smiles. Kindness earned! ✨ Betty walks her safely home, then continues the mission."},
+      {text:"Tell Bella to stop crying and toughen up.", correct:false, bad:"That would only make Bella feel worse! Kindness is the way. Try again."}
+    ], next:5
+  },
+  {
+    title:"Test 4 — Honesty: Professor Owl",
+    char:'owl',
+    text:"Betty arrives at the ancient library tree where Professor Owl sits guarding the scrolls of Mora.\n\nHe peers at her over his spectacles. \"I will only share the next clue with someone whose heart is fully honest. Tell me — did you stop to help the bunny, or did you walk past her?\"\n\nBetty knows she stopped. But telling the truth feels scary when the scrolls are so important. What does she say?",
+    choices:[
+      {text:"\"I stopped and helped Bella home.\" (The truth.)", correct:true, quality:"honesty", feedback:"Betty looks straight at the owl. 'I stopped and helped Bella home,' she says clearly. The owl beams. 'A truthful heart!' He hands her the ancient scroll. Honesty earned! ✨"},
+      {text:"\"I came straight here without stopping.\" (A lie.)", correct:false, bad:"The owl blinks slowly. 'Are you sure? I see all, Betty.' Lying never leads anywhere good. Try again!"},
+      {text:"Say nothing and grab the scroll.", correct:false, bad:"Taking without permission and without honesty is not right. Betty must speak truthfully. Try again!"}
+    ], next:6
+  },
+  {
+    title:"Test 5 — Faith: The Crumbling Bridge",
+    char:'dove',
+    text:"The scroll leads Betty to a wide, dark river. The only way across is a crumbling rope bridge that sways dangerously in the wind.\n\nA white dove lands on Betty's shoulder and coos softly. \"Trust,\" it seems to whisper.\n\nBut the bridge looks like it could snap at any moment. Other animals at the bank say it's impossible.\n\nWhat does Betty do?",
+    choices:[
+      {text:"Refuse to cross — it's too dangerous.", correct:false, bad:"Fear is loud, but faith is stronger. If God sent her this far, He won't let her fall. Try again!"},
+      {text:"Step onto the bridge with faith, one step at a time.", correct:true, quality:"faith", feedback:"Betty breathes deeply and steps onto the bridge. Each plank holds! The dove flies ahead, lighting the way. Faith earned! ✨ Betty makes it safely across."},
+      {text:"Wait at the river for someone else to fix the bridge.", correct:false, bad:"Waiting for perfect conditions means the village stays in darkness. Step forward in faith! Try again."}
+    ], next:7
+  },
+  {
+    title:"Test 6 — Patience: The Magic Seed",
+    char:'betty',
+    text:"Across the river Betty finds the magical golden seed described in the ancient scroll. The scroll says:\n\n\"Plant this seed. Water it with care for THREE full days. On the third morning it will bloom with the light of Mora.\"\n\nOn day two, nothing has happened. A group of animals pass by and laugh loudly. \"It's not working! You've failed, Betty! Give up!\"\n\nWhat does Betty do?",
+    choices:[
+      {text:"Pull the seed out to check if it's growing underground.", correct:false, bad:"Oh no — uprooting it destroys its growth! Patience means waiting even when you can't see the results yet."},
+      {text:"Believe the mocking animals and stop watering.", correct:false, bad:"Don't let other people's doubt become your doubt! Hold on. Try again."},
+      {text:"Keep watering faithfully — God's timing is always perfect.", correct:true, quality:"patience", feedback:"Betty keeps tending the seed with quiet trust. On the THIRD morning — BOOM — a dazzling golden flower erupts! Patience earned! ✨ The animals gasp in wonder."}
+    ], next:8
+  },
+  {
+    title:"Test 7 — Humility: Cola's Lie",
+    char:'cola',
+    text:"Betty races back to Mora holding the glowing flower — only to find Cola the fox standing before King Leo, saying:\n\n\"Your Majesty, I am the one who found the cure! I worked very hard for it. Please give me the royal reward!\"\n\nThe crowd murmurs. Betty is the only one who knows the truth. Her chest burns with hurt.\n\nWhat does Betty do?",
+    choices:[
+      {text:"Shout Cola's lie to the whole village.", correct:false, bad:"Public shaming isn't the right way, even when you've been wronged. What would a humble heart do? Try again."},
+      {text:"Say nothing — Cola can have the reward. Betty doesn't care.", correct:false, bad:"Staying silent about the truth isn't the same as humility. The village deserves the truth. Try again."},
+      {text:"Step forward calmly, tell the truth, and let the King decide.", correct:true, quality:"humility", feedback:"Betty steps forward quietly. 'Your Majesty, I must tell you what truly happened,' she says, without anger. The King listens. Humility earned! ✨ He sees Betty's peaceful courage and is deeply moved."}
+    ], next:9
+  },
+  {
+    title:"Test 8 — Forgiveness: Cola is sorry",
+    char:'cola',
+    text:"Cola the fox crumbles. Tears stream down his face as the truth comes out.\n\n\"I'm so sorry, Betty,\" Cola whispers. \"I wanted the reward so badly. I was jealous. Please... can you ever forgive me?\"\n\nThe whole village holds its breath. Even the King watches. This is Betty's choice.\n\nWhat does Betty do?",
+    choices:[
+      {text:"\"No. What you did was wrong and I will never forgive you.\"", correct:false, bad:"Holding onto anger keeps darkness in our hearts too. God asks us to forgive as He forgives us. Try again."},
+      {text:"Ignore Cola and walk away without saying anything.", correct:false, bad:"Silence can be its own kind of cruelty. Betty's heart is bigger than this. Try again."},
+      {text:"\"Cola, I forgive you. Let's move forward together.\"", correct:true, quality:null, feedback:"Betty places her paw on Cola's shoulder. 'I forgive you, Cola. Truly.' The crowd goes silent — then erupts in cheers. The darkness outside begins to crack with golden light! ✨ Forgiveness is powerful magic."}
+    ], next:10
+  },
+  {
+    title:"Test 9 — Gratitude: The Angel Returns",
+    char:'angel',
+    text:"The angel appears once more, shimmering with light.\n\n\"Betty, you have come so far. Before the final step — tell me. What has this journey taught you?\"\n\nBetty thinks of the crow, the bridge, the seed, Cola's tears, and all the moments she almost gave up.\n\nWhat does Betty say?",
+    choices:[
+      {text:"\"I am so grateful — not just for the reward, but for every lesson along the way.\"", correct:true, quality:"gratitude", feedback:"Betty's eyes fill with tears of joy. 'Every hard moment made me stronger,' she says. The angel glows brighter. 'That, Betty, is wisdom.' Gratitude earned! ✨"},
+      {text:"\"I'm just glad it's almost over. I want my reward now.\"", correct:false, bad:"The reward isn't the point of the journey! What has Betty truly gained? Think again."},
+      {text:"\"I did everything on my own. I'm very proud of myself.\"", correct:false, bad:"Betty had help every step of the way — from God, from kindness, from the dove. Let's reflect more humbly. Try again!"}
+    ], next:11
+  },
+  {
+    title:"Test 10 — Courage again: Facing the King",
+    char:'king',
+    text:"King Leo summons Betty alone to his throne room. His voice is deep and powerful.\n\n\"Betty, Cola confessed everything. You could have made him look very bad in front of everyone. Why didn't you?\"\n\nBetty feels small before the mighty lion king. But she must answer honestly.\n\nWhat does Betty say?",
+    choices:[
+      {text:"\"Because humiliating him would not have healed him — or Mora.\"", correct:true, quality:null, feedback:"The King is silent for a long moment. Then he smiles — a slow, warm, kingly smile. 'Well said, Betty. You have a rare heart.' ✨ He rises from his throne and bows to her — something a king almost never does."},
+      {text:"\"I was afraid of making the King angry.\"", correct:false, bad:"Betty's choice wasn't about fear — it came from a place of love and wisdom. What was her real reason? Try again."},
+      {text:"\"I didn't want the village to think badly of Cola.\"", correct:false, bad:"That's partly true — but there's a deeper, truer reason. What did Betty really learn about forgiveness and healing? Try again."}
+    ], next:12
+  },
+  {
+    title:"Test 11 — Trust: The Final Door",
+    char:'angel',
+    text:"The angel leads Betty to the very heart of Mora — a sealed golden door that no animal has opened in generations.\n\n\"Behind this door is the source of Mora's light,\" the angel says. \"But it can only be opened by someone who has truly learned to trust — not just in God, but in themselves.\"\n\nThe door has no handle, no keyhole, no riddle. Just Betty and her open hands.\n\nWhat should she do?",
+    choices:[
+      {text:"Stand at the door, breathe, and place both paws on it with complete trust.", correct:true, quality:null, feedback:"Betty stands tall, closes her eyes, and presses both paws to the golden door. She feels warmth surge through her paws — and the door swings open in a blaze of brilliant light. ✨ The village gasps. Light floods everywhere!"},
+      {text:"Ask the angel for more instructions before touching it.", correct:false, bad:"Sometimes we have to act on what we already know and trust what's inside us. Betty is ready! Try again."},
+      {text:"Turn back — she doesn't feel ready.", correct:false, bad:"But Betty IS ready — every test prepared her for this exact moment! She must believe it. Try again."}
+    ], next:13
+  },
+  {
+    title:"Test 12 — Giving: The Royal Reward",
+    char:'king',
+    text:"King Leo stands before all of Mora, the golden flower glowing in his paw.\n\n\"Betty, you have saved our village. The royal reward — gold, a grand house, and the title of Mora's Greatest Hero — is yours.\"\n\nThe crowd roars!\n\nBetty looks at the reward, then looks at Bella the shy bunny, at Cola the fox, at the frightened animals who couldn't afford their own homes.\n\nWhat does Betty do?",
+    choices:[
+      {text:"Accept everything — she earned it and deserves it all!", correct:false, bad:"She did earn it! But is that the most Betty-like choice? After all she's learned, what would she do? Try again."},
+      {text:"Share the reward — keep what she needs and give the rest to the village and those in need.", correct:true, quality:null, feedback:"Betty steps forward. 'Your Majesty, I would like to share the reward with those who need it most.' The King's eyes shine. Cola weeps. The village ERUPTS. Betty is crowned — not because she kept everything, but because she gave. ✨"},
+      {text:"Give the entire reward to Cola to make up for what happened.", correct:false, bad:"A generous thought — but Betty shouldn't give everything away either. A wise heart keeps what it needs and gives generously. Try again."}
+    ], next:14, isEnd:true
+  },
+  {
+    title:"Mora is saved! 🌟",
+    char:'betty',
+    text:"The moment Betty shares the reward, something miraculous happens.\n\nThe golden flower blazes with blinding light — and it spreads! Over rooftops, through streets, up into the sky. The grey clouds melt away. Warm sunlight pours down on Mora for the first time in what feels like forever.\n\nFlowers bloom. Birds sing. Children laugh.\n\nThe angel appears one final time, smiling brightly:\n\n\"Betty, you did not just carry God's power — you BECAME it. Through courage, prayer, kindness, honesty, faith, patience, humility, and gratitude. Well done, good and faithful bear.\"\n\nKing Leo places the crown of golden flowers on Betty's head.\nCola stands beside her, beaming with pride and love.\nBella the bunny hops up and hugs Betty's leg.\n\nAnd so the light returned to Mora.\nNot by force.\nNot by magic.\nBut through the heart of one small, faithful bear. 🐻👑",
+    choices:[], isEnd:true
+  }
+];
+
+let cur=0, earned=new Set(), wrongCount=0, player={};
+
+function beep(freq,dur,type='sine',vol=0.15){
+  try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start();o.stop(ctx.currentTime+dur);}catch(e){}
+}
+function sndSuccess(){beep(523,.1);setTimeout(()=>beep(659,.12),110);setTimeout(()=>beep(784,.22),230);}
+function sndWrong(){beep(180,.25,'sawtooth',.1);}
+function sndClick(){beep(440,.07);}
+function sndFanfare(){[523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>beep(f,.28),i*120));}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startGame(){
+  const n=document.getElementById('f-name').value.trim();
+  const a=parseInt(document.getElementById('f-age').value);
+  const c=document.getElementById('f-city').value.trim();
+  const em=document.getElementById('f-email').value.trim();
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+  const se=(id,v)=>document.getElementById(id).style.display=v?'block':'none';
+  se('e-name',!n);se('e-age',!a||a<5||a>18);se('e-city',!c);se('e-email',!emailOk);
+  if(!n||!a||a<5||a>18||!c||!emailOk)return;
+  player={name:n,age:a,city:c,email:em};
+  sndClick();show('s-game');showScene(0);
+}
+
+function showCharCard(charKey){
+  const el=document.getElementById('char-display');
+  if(!charKey||!CHARS[charKey]){el.style.display='none';return;}
+  const ch=CHARS[charKey];
+  el.style.display='flex';
+  el.innerHTML=`<div class="char-avatar" id="char-av">${ch.emoji}</div><div><div class="char-name">${ch.name}</div><div class="char-desc">${ch.desc}</div><span class="char-badge">${ch.badge}</span></div>`;
+  setTimeout(()=>{const av=document.getElementById('char-av');if(av){av.classList.add('spin');setTimeout(()=>av.classList.remove('spin'),650);}},100);
+}
+
+function showScene(idx){
+  cur=idx;
+  const s=SCENES[idx];
+  const total=SCENES.filter(sc=>!sc.isEnd||sc.choices.length>0).length;
+  const pct=Math.round((idx/SCENES.length)*100);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-txt').textContent=s.isEnd&&!s.choices.length?'':'Scene '+(idx+1)+' of '+SCENES.length;
+  document.getElementById('scene-title').textContent=s.title;
+  document.getElementById('scene-text').textContent=s.text;
+  showCharCard(s.char||null);
+  const fb=document.getElementById('feedback-box');
+  fb.style.display='none';fb.className='feedback-box';
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('choices').innerHTML='';
+  if(s.isEnd&&!s.choices.length){showEnd();return;}
+  if(!s.choices||s.choices.length===0){document.getElementById('next-btn').style.display='inline-block';return;}
+  s.choices.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='choice-btn';b.textContent=c.text;
+    b.onclick=()=>handleChoice(c,s);
+    document.getElementById('choices').appendChild(b);
+  });
+}
+
+function handleChoice(c,s){
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback-box');
+  const nb=document.getElementById('next-btn');
+  if(c.correct){
+    if(c.quality&&!earned.has(c.quality)){earned.add(c.quality);const el=document.querySelector(`.pill[data-q="${c.quality}"]`);if(el)el.classList.add('earned');}
+    sndSuccess();
+    fb.className='feedback-box fb-good';fb.textContent='✓ '+(c.feedback||'');fb.style.display='block';
+    nb.style.display='inline-block';
+    nb.textContent=(s.next>=SCENES.length-1)?'See the ending 🌟':'Continue ›';
+  }else{
+    wrongCount++;sndWrong();
+    fb.className='feedback-box fb-bad';fb.textContent=c.bad||"That's not quite right — try again!";fb.style.display='block';
+    setTimeout(()=>{document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=false);fb.style.display='none';},2400);
+  }
+}
+
+function advanceScene(){sndClick();const s=SCENES[cur];if(s.next!==undefined)showScene(s.next);}
+
+function showEnd(){
+  show('s-end');
+  setTimeout(sndFanfare,300);
+  const score=Math.max(40,Math.round(100-wrongCount*5));
+  const grade=score>=90?'Champion of Light':score>=75?'Brave Adventurer':score>=60?'Kind-hearted Learner':'Faithful Beginner';
+  const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('cert-box').innerHTML=`
+    <span class="cert-corner tl">🌟</span><span class="cert-corner tr">🌟</span>
+    <span class="cert-corner bl">✨</span><span class="cert-corner br">✨</span>
+    <div class="cert-eyebrow">Certificate of Adventure</div>
+    <div style="font-size:0.78rem;color:var(--muted);margin:2px 0">This is proudly awarded to</div>
+    <div class="cert-name">${player.name}</div>
+    <div class="cert-detail">Age ${player.age} &nbsp;·&nbsp; ${player.city}<br>for completing all 12 tests and saving the village of Mora</div>
+    <div class="cert-grade">${grade}</div>
+    <div class="cert-book">Betty and the Light of Mora · by Blessing Mhlanga</div>
+    <div style="font-size:0.7rem;color:var(--muted);margin-top:6px">${today}</div>`;
+  document.getElementById('stat-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${score}</div><div class="stat-lbl">Score</div></div>
+    <div class="stat-card"><div class="stat-num">${earned.size}/8</div><div class="stat-lbl">Qualities</div></div>
+    <div class="stat-card"><div class="stat-num">${wrongCount}</div><div class="stat-lbl">Retries</div></div>`;
+  const all=['courage','prayer','kindness','honesty','faith','patience','humility','gratitude'];
+  document.getElementById('end-pills').innerHTML=all.map(q=>`<span class="pill ${earned.has(q)?'earned':''}">${q.charAt(0).toUpperCase()+q.slice(1)}</span>`).join('');
+  launchConfetti();
+}
+
+function launchConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  const wrap=document.getElementById('end-wrap');
+  canvas.width=wrap.offsetWidth||600;canvas.height=wrap.offsetHeight||500;
+  const ctx=canvas.getContext('2d');
+  const colors=['#BFDF3A','#F0C030','#FFE135','#D4A017','#A8CF00','#FFF1C0','#5A7A00'];
+  const pieces=Array.from({length:100},()=>({x:Math.random()*canvas.width,y:Math.random()*-canvas.height,r:Math.random()*6+3,c:colors[Math.floor(Math.random()*colors.length)],vy:Math.random()*2.5+1.2,vx:(Math.random()-.5)*2,rot:Math.random()*360,vrot:Math.random()*5-2.5,shape:Math.random()>.5?'rect':'circle'}));
+  let frame=0;
+  function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);pieces.forEach(p=>{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.c;if(p.shape==='rect')ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill();}ctx.restore();p.y+=p.vy;p.x+=p.vx;p.rot+=p.vrot;if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}});if(++frame<260)requestAnimationFrame(draw);else ctx.clearRect(0,0,canvas.width,canvas.height);}
+  draw();
+}
+
+function restartGame(){
+  cur=0;earned.clear();wrongCount=0;player={};
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('earned'));
+  document.getElementById('char-display').style.display='none';
+  sndClick();show('s-register');
+}
+</script>
+</body>
+</html>
